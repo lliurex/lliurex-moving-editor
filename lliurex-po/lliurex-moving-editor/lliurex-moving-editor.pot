@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-11 09:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ui.glade:7
+msgid "Rule Editor"
+msgstr ""
+
+#: ui.glade:29 ui.glade:213 ui.glade:516
+msgid "Name"
+msgstr ""
+
+#: ui.glade:64
+msgid "Icon"
+msgstr ""
+
+#: ui.glade:77
+msgid "Change icon"
+msgstr ""
+
+#: ui.glade:124
+msgid "Add a new pattern"
+msgstr ""
+
+#: ui.glade:144
+msgid "Delete current pattern"
+msgstr ""
+
+#: ui.glade:188
+msgid "Icon selection"
+msgstr ""
+
+#: ui.glade:354
+msgid "Moving profiles setup"
+msgstr ""
+
+#: ui.glade:373
+msgid "Profiles"
+msgstr ""
+
+#: ui.glade:405
+msgid "Add a new profile"
+msgstr ""
+
+#: ui.glade:425
+msgid "Delete current profile"
+msgstr ""
+
+#: ui.glade:445
+msgid "Duplicate current profile"
+msgstr ""
+
+#: ui.glade:465
+msgid "Edit current profile"
+msgstr ""
+
+#: ui.glade:492
+msgid "Profile setup"
+msgstr ""
+
+#: ui.glade:566
+msgid "Add a new rule"
+msgstr ""
+
+#: ui.glade:586
+msgid "Remove current rule"
+msgstr ""
+
+#: ui.glade:606
+msgid "Edit current rule"
+msgstr ""
+
+#: lliurex-moving-editor:131 lliurex-moving-editor:163
+msgid "Use"
+msgstr ""
+
+#: lliurex-moving-editor:142
+msgid "Profile"
+msgstr ""
+
+#: lliurex-moving-editor:172
+msgid "Rule"
+msgstr ""
+
+#: lliurex-moving-editor:194
+msgid "Regex"
+msgstr ""
+
+#: lliurex-moving-editor:207
+msgid "Type"
+msgstr ""
+
+#: lliurex-moving-editor:226
+msgid "Context"
+msgstr ""
+
+#: lliurex-moving-editor:252
+msgid "Icon name"
+msgstr ""
+
+#: lliurex-moving-editor:326
+msgid "New profile"
+msgstr ""
+
+#: lliurex-moving-editor:379
+msgid "Copy of "
+msgstr ""
+
+#: lliurex-moving-editor:500
+msgid "(read only)"
+msgstr ""

@@ -1,0 +1,22 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Moving Profiles
+Name[en]=Moving profiles
+Name[es]=Perfiles móviles
+Name[qcv]=Perfils mòbils
+Name[ca_ES@valencia]=Perfils mòbils
+Name[ca_ES.UTF-8@valencia]=Perfils mòbils
+Comment=Moving profiles setup
+Comment[es]=Configuración de perfiles moviles
+Comment[qcv]=Configuració de perfils mòbils
+Comment[ca_ES@valencia]=Configuració de perfils mòbils
+Comment[ca_ES.UTF-8@valencia]=Configuració de perfils mòbils
+Exec=lliurex-moving-editor
+Terminal=false
+Icon=lliurex-moving
+Type=Application
+GenericName=Moving Profile
+NoDisplay=true
+Categories=LliureX-Administration;
+

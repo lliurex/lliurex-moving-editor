@@ -1,0 +1,3 @@
+#!/bin/bash
+exec lliurex-moving-editor
+exit 0
