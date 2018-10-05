@@ -9,6 +9,5 @@ Icon=lliurex-moving
 Groups=teachers;admins;admin;adm
 Category=Configuration
 ScriptPath=lliurex-moving.zmd
-#Using=pe 
 Service=False
 
