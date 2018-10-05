@@ -1,0 +1,16 @@
+Source: lliurex-moving-editor
+Section: x11
+Priority: extra
+Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), python-dev, n4d-dev, zero-dev,llxcfg-dev, llxsrchelper
+Standards-Version: 3.9.3
+Homepage: http://www.lliurex.net
+
+
+Package: lliurex-moving-editor
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: zero-center
+Description: Lliurex Moving Editor
+ Lliurex moving graphical interface settings manager
+ 

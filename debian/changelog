@@ -1,0 +1,141 @@
+lliurex-moving-editor (3.0.14) xenial; urgency=high
+
+  * Updated banner art
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Wed, 08 Aug 2018 13:34:38 +0200
+
+lliurex-moving-editor (3.0.13) xenial; urgency=medium
+
+  * Updated categorization in zero-center
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 30 Apr 2018 09:49:59 +0200
+
+lliurex-moving-editor (3.0.12) xenial; urgency=medium
+
+  * Add desktop file
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 08 Feb 2017 08:20:56 +0100
+
+lliurex-moving-editor (3.0.11) xenial; urgency=medium
+
+  * First release to xenial
+  * Fixed require version of Gtk (lliurex-moving-editor)
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 15 Feb 2016 09:28:25 +0100
+
+lliurex-moving-editor (3.0.8) trusty; urgency=low
+
+  * Updated valencian translations
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 23 Jun 2015 16:15:27 +0200
+
+lliurex-moving-editor (3.0.7) trusty; urgency=low
+
+  * Labeled default profile (LliureX) as read only
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 23 Jun 2015 11:45:34 +0200
+
+lliurex-moving-editor (3.0.6) trusty; urgency=high
+
+  * Updated translation (ca_ES@valencia) 
+
+ -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Mon, 15 Jun 2015 14:27:54 +0200
+
+lliurex-moving-editor (3.0.5) trusty; urgency=low
+
+  * Updated translations (es)
+  * Fixed glade not using translations
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 15 Jun 2015 14:16:42 +0200
+
+lliurex-moving-editor (3.0.4) trusty; urgency=low
+
+  * Added Cancel buttons
+  * Fixed a bug which reverted changes made before selecting a new icon
+  * code clean up
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 25 May 2015 09:43:08 +0200
+
+lliurex-moving-editor (3.0.3) trusty; urgency=low
+
+  * Added tooltips
+  * Updated translations
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 11 May 2015 10:19:43 +0200
+
+lliurex-moving-editor (3.0.2) trusty; urgency=medium
+
+  * Added spanish translation
+  * Connecting to server instead of localhost
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Wed, 08 Apr 2015 16:36:43 +0200
+
+lliurex-moving-editor (3.0.1) trusty; urgency=low
+
+  * Added missing build dep
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Thu, 26 Mar 2015 08:55:02 +0100
+
+lliurex-moving-editor (3.0.0) trusty; urgency=low
+
+  * Matched 3.0 version
+  * Rewritten code. New design and approach
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 24 Mar 2015 13:36:41 +0100
+
+lliurex-moving-editor (1.0~beta2) precise; urgency=high
+
+  * Added zero-center banners
+
+ -- Hector Garcia Huerta <hectorgh@gmail.com>  Thu, 08 May 2014 13:18:44 +0200
+
+lliurex-moving-editor (1.0~beta1) precise; urgency=low
+
+  * Fixed zero user privilege
+  * Updated translations
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Mon, 23 Sep 2013 09:30:45 +0200
+
+lliurex-moving-editor (1.0~alpha7) precise; urgency=low
+
+  * Fixed build dep 
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Thu, 05 Sep 2013 17:46:10 +0200
+
+lliurex-moving-editor (1.0~alpha6) precise; urgency=low
+
+  * Fixed build dep
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Thu, 05 Sep 2013 16:52:04 +0200
+
+lliurex-moving-editor (1.0~alpha5) precise; urgency=low
+
+  * Fixed rules
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Thu, 05 Sep 2013 16:19:11 +0200
+
+lliurex-moving-editor (1.0~alpha4) precise; urgency=low
+
+  * Fixed login not working
+  * Fixed translations
+  * Fixed not showing on zero center
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Thu, 05 Sep 2013 13:04:21 +0200
+
+lliurex-moving-editor (1.0~alpha3) precise; urgency=low
+
+  * Login validation throgh n4d
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Fri, 14 Jun 2013 09:30:23 +0200
+
+lliurex-moving-editor (1.0~alpha2) precise; urgency=high
+
+  * Added n4b build dep
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Wed, 12 Jun 2013 08:27:50 +0200
+
+lliurex-moving-editor (1.0~alpha) precise; urgency=high
+
+  * Initial release.
+
+ -- Enrique Medina Gremaldos <lliurex_devel4@edu.gva.es>  Wed, 12 Jun 2013 08:14:51 +0200
