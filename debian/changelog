@@ -1,3 +1,9 @@
+lliurex-moving-editor (3.0.25) bionic; urgency=medium
+
+  * Adding sudo group
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 01 Apr 2019 08:36:02 +0200
+
 lliurex-moving-editor (3.0.24) bionic; urgency=medium
 
   * Initial release for bionic
