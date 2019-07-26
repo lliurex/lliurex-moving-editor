@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Pilar Embid Giner <embid_mar@gva.es>, 2016.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-11 09:52+0200\n"
+"PO-Revision-Date: 2016-10-24 10:03+0200\n"
+"Last-Translator: Pilar Embid Giner <embid_mar@gva.es>\n"
+"Language-Team: LliureX\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+#: ui.glade:7
+msgid "Rule Editor"
+msgstr "Editor de regles"
+
+#: ui.glade:29 ui.glade:213 ui.glade:516
+msgid "Name"
+msgstr "Nom"
+
+#: ui.glade:64
+msgid "Icon"
+msgstr "Icona"
+
+#: ui.glade:77
+msgid "Change icon"
+msgstr "Cambia la icona"
+
+#: ui.glade:124
+msgid "Add a new pattern"
+msgstr "Afig un patró nou"
+
+#: ui.glade:144
+msgid "Delete current pattern"
+msgstr "Esborra el patró actual"
+
+#: ui.glade:188
+msgid "Icon selection"
+msgstr "Selecció d'icona"
+
+#: ui.glade:354
+msgid "Moving profiles setup"
+msgstr "Configuració dels perfils mòbils"
+
+#: ui.glade:373
+msgid "Profiles"
+msgstr "Perfils"
+
+#: ui.glade:405
+msgid "Add a new profile"
+msgstr "Afig un perfil nou"
+
+#: ui.glade:425
+msgid "Delete current profile"
+msgstr "Esborra el perfil actual"
+
+#: ui.glade:445
+msgid "Duplicate current profile"
+msgstr "Duplica el perfil actual"
+
+#: ui.glade:465
+msgid "Edit current profile"
+msgstr "Edita el perfil actual"
+
+#: ui.glade:492
+msgid "Profile setup"
+msgstr "Configuració de perfils"
+
+#: ui.glade:566
+msgid "Add a new rule"
+msgstr "Afig una regla nova"
+
+#: ui.glade:586
+msgid "Remove current rule"
+msgstr "Esborra la regla actual"
+
+#: ui.glade:606
+msgid "Edit current rule"
+msgstr "Edita la regla actual"
+
+#: lliurex-moving-editor:131 lliurex-moving-editor:163
+msgid "Use"
+msgstr "Utilitza"
+
+#: lliurex-moving-editor:142
+msgid "Profile"
+msgstr "Perfil"
+
+#: lliurex-moving-editor:172
+msgid "Rule"
+msgstr "Regla"
+
+#: lliurex-moving-editor:194
+msgid "Regex"
+msgstr "Expressió regular"
+
+#: lliurex-moving-editor:207
+msgid "Type"
+msgstr "Tipus"
+
+#: lliurex-moving-editor:226
+msgid "Context"
+msgstr "Context"
+
+#: lliurex-moving-editor:252
+msgid "Icon name"
+msgstr "Nom de la icona"
+
+#: lliurex-moving-editor:326
+msgid "New profile"
+msgstr "Perfil nou"
+
+#: lliurex-moving-editor:379
+msgid "Copy of "
+msgstr "Còpia de "
+
+#: lliurex-moving-editor:500
+msgid "(read only)"
+msgstr "(només de lectura)"
