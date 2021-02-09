@@ -1,4 +1,7 @@
 #!/usr/bin/python
+
+import n4d.client
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
@@ -8,7 +11,6 @@ import signal
 import hashlib
 import copy
 import time
-import xmlrpclib
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -248,9 +250,9 @@ class Editor:
 
     def OnDestroy(self, data):
 
-        proxy = xmlrpclib.ServerProxy("https://server:9779")
-        proxy.set_conf("", "MovingProfiles", self.db)
-
+        client = n4d.client.Client("https://server:9779")
+        client.MovingProfiles.set_conf(self.db)
+        
         Gtk.main_quit()
 
     def OnCellRadioToggled(self, cell, path, model, col):
@@ -569,8 +571,8 @@ class Editor:
 
     def LoadSetup(self):
 
-        proxy = xmlrpclib.ServerProxy("https://server:9779")
-        self.db = proxy.get_conf("", "MovingProfiles")
+        client = n4d.client.Client("https://server:9779")
+        self.db = client.MovingProfiles.get_conf()
 
 
 if __name__ == "__main__":
