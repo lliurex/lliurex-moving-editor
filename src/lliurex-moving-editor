@@ -1,15 +1,16 @@
 #!/usr/bin/python
+
+import n4d.client
+
 import gi
-gi.require_version('Gtk','3.0')
-from gi.repository import Gtk,GObject
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GObject
 import os
 import sys
 import signal
 import hashlib
 import copy
 import time
-import xmlrpclib
-
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -18,617 +19,563 @@ gettext.textdomain('lliurex-moving-editor')
 _ = gettext.gettext
 
 
-
 class Editor:
+    def __init__(self):
 
-	def __init__(self):
-	
-		glade_file="../rsrc/ui.glade"
-		
-		if not os.path.exists(glade_file):
-			glade_file="/usr/share/lliurex-moving-editor/ui.glade"
-			
-			if not os.path.exists(glade_file):
-				raise("Resource file not found: "+glade_file)
-		
-		h=hashlib.md5()
-		h.update("default profile")
-		self.default_id=h.hexdigest()
-		
-		#print "default id:",self.default_id
-		
-		self.first=True
-		self.count=0
-		self.LoadSetup()
-	
-		uitree = Gtk.Builder()
-		uitree.set_translation_domain("lliurex-moving-editor")
-		uitree.add_from_file(glade_file)
-		
-		
-		self.winProfiles=uitree.get_object("winProfiles")
-		self.winRules=uitree.get_object("winRules")
-		self.winEditor=uitree.get_object("winEditor")
-		self.winIconSelector=uitree.get_object("winIconSelector")
-		
-		self.winProfiles.connect("destroy",self.OnDestroy)
-		
-		self.treeProfiles=uitree.get_object("treeProfiles")
-		self.treeRules=uitree.get_object("treeRules")
-		self.treeRegex=uitree.get_object("treeRegex")
-		
-		btnEditProfile=uitree.get_object("btnEditProfile")
-		btnEditProfile.connect("clicked",self.OnBtnEditProfileClicked)
-		
-		btnAddProfile=uitree.get_object("btnAddProfile")
-		btnAddProfile.connect("clicked",self.OnBtnAddProfileClicked)
-		
-		btnRemoveProfile=uitree.get_object("btnRemoveProfile")
-		btnRemoveProfile.connect("clicked",self.OnBtnRemoveProfileClicked)
-		
-		btnDuplicateProfile=uitree.get_object("btnDuplicateProfile")
-		btnDuplicateProfile.connect("clicked",self.OnBtnDuplicateProfileClicked)
-		
-		btnEditRule=uitree.get_object("btnEditRule")
-		btnEditRule.connect("clicked",self.OnBtnEditRuleClicked)
-		
-		btnOkRule=uitree.get_object("btnOkRule")
-		btnOkRule.connect("clicked",self.OnBtnOkRuleClicked)
-		
-		btnCancelRule=uitree.get_object("btnCancelRule")
-		btnCancelRule.connect("clicked",self.OnBtnCancelRuleClicked)
-		
-		btnIconEditor=uitree.get_object("btnIconEditor")
-		btnIconEditor.connect("clicked",self.OnBtnIconEditorClicked)
-		
-		self.imgIconEditor=uitree.get_object("imgIconEditor")
+        glade_file = "../rsrc/ui.glade"
 
-		btnOkEdit=uitree.get_object("btnOkEdit")
-		btnOkEdit.connect("clicked",self.OnBtnOkEditClicked)
-		
-		btnCancelEdit=uitree.get_object("btnCancelEdit")
-		btnCancelEdit.connect("clicked",self.OnBtnCancelEditClicked)
-		
-		btnAddRegex=uitree.get_object("btnAddRegex")
-		btnAddRegex.connect("clicked",self.OnBtnAddRegexClicked)
-		
-		btnRemoveRegex=uitree.get_object("btnRemoveRegex")
-		btnRemoveRegex.connect("clicked",self.OnBtnRemoveRegexClicked)
+        if not os.path.exists(glade_file):
+            glade_file = "/usr/share/lliurex-moving-editor/ui.glade"
 
-		btnAddRule=uitree.get_object("btnAddRule")
-		btnAddRule.connect("clicked",self.OnBtnAddRuleClicked)
-		
-		btnRemoveRule=uitree.get_object("btnRemoveRule")
-		btnRemoveRule.connect("clicked",self.OnBtnRemoveRuleClicked)
-		
-		
-		self.txtRuleName=uitree.get_object("txtRuleName")
-		self.txtProfileName=uitree.get_object("txtProfileName")
-		
-		#icon selector
-		self.treeIconContexts=uitree.get_object("treeIconContexts")
-		self.treeIconContexts.connect("cursor-changed",self.OnTreeIconContextsChanged)
-		
-		self.treeIcons=uitree.get_object("treeIcons")
-		self.treeIcons.connect("cursor-changed",self.OnTreeIconsChanged)
-		
-		self.txtIconName=uitree.get_object("txtIconName")
-		self.txtIconName.connect("changed",self.OnTxtIconNameChanged)
-		self.imgIconPreview=uitree.get_object("imgIconPreview")
-		
-		btnIconOk=uitree.get_object("btnIconOk")
-		btnIconOk.connect("clicked",self.OnBtnIconOkClicked)
-		
-		btnIconCancel=uitree.get_object("btnIconCancel")
-		btnIconCancel.connect("clicked",self.OnBtnIconCancelClicked)
-		
-		
-		#str unique id
-		#bool active
-		#str name
-		self.modelProfiles=Gtk.ListStore(str,bool,str)
-		self.treeProfiles.set_model(self.modelProfiles)
-		
-		col=Gtk.TreeViewColumn(_("Use"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererToggle()
-		col.pack_start(cell, True)
-		cell.set_property("activatable",True)
-		cell.set_property("radio",True)
-		cell.connect("toggled",self.OnCellRadioToggled,self.modelProfiles,1)
-		col.add_attribute(cell, 'active', 1)
-		self.treeProfiles.append_column(col)
+            if not os.path.exists(glade_file):
+                raise ("Resource file not found: " + glade_file)
+
+        h = hashlib.md5()
+        h.update("default profile")
+        self.default_id = h.hexdigest()
+
+        #print "default id:",self.default_id
+
+        self.first = True
+        self.count = 0
+        self.LoadSetup()
+
+        uitree = Gtk.Builder()
+        uitree.set_translation_domain("lliurex-moving-editor")
+        uitree.add_from_file(glade_file)
+
+        self.winProfiles = uitree.get_object("winProfiles")
+        self.winRules = uitree.get_object("winRules")
+        self.winEditor = uitree.get_object("winEditor")
+        self.winIconSelector = uitree.get_object("winIconSelector")
+
+        self.winProfiles.connect("destroy", self.OnDestroy)
+
+        self.treeProfiles = uitree.get_object("treeProfiles")
+        self.treeRules = uitree.get_object("treeRules")
+        self.treeRegex = uitree.get_object("treeRegex")
+
+        btnEditProfile = uitree.get_object("btnEditProfile")
+        btnEditProfile.connect("clicked", self.OnBtnEditProfileClicked)
+
+        btnAddProfile = uitree.get_object("btnAddProfile")
+        btnAddProfile.connect("clicked", self.OnBtnAddProfileClicked)
+
+        btnRemoveProfile = uitree.get_object("btnRemoveProfile")
+        btnRemoveProfile.connect("clicked", self.OnBtnRemoveProfileClicked)
+
+        btnDuplicateProfile = uitree.get_object("btnDuplicateProfile")
+        btnDuplicateProfile.connect("clicked",
+                                    self.OnBtnDuplicateProfileClicked)
+
+        btnEditRule = uitree.get_object("btnEditRule")
+        btnEditRule.connect("clicked", self.OnBtnEditRuleClicked)
+
+        btnOkRule = uitree.get_object("btnOkRule")
+        btnOkRule.connect("clicked", self.OnBtnOkRuleClicked)
+
+        btnCancelRule = uitree.get_object("btnCancelRule")
+        btnCancelRule.connect("clicked", self.OnBtnCancelRuleClicked)
+
+        btnIconEditor = uitree.get_object("btnIconEditor")
+        btnIconEditor.connect("clicked", self.OnBtnIconEditorClicked)
+
+        self.imgIconEditor = uitree.get_object("imgIconEditor")
+
+        btnOkEdit = uitree.get_object("btnOkEdit")
+        btnOkEdit.connect("clicked", self.OnBtnOkEditClicked)
+
+        btnCancelEdit = uitree.get_object("btnCancelEdit")
+        btnCancelEdit.connect("clicked", self.OnBtnCancelEditClicked)
+
+        btnAddRegex = uitree.get_object("btnAddRegex")
+        btnAddRegex.connect("clicked", self.OnBtnAddRegexClicked)
+
+        btnRemoveRegex = uitree.get_object("btnRemoveRegex")
+        btnRemoveRegex.connect("clicked", self.OnBtnRemoveRegexClicked)
+
+        btnAddRule = uitree.get_object("btnAddRule")
+        btnAddRule.connect("clicked", self.OnBtnAddRuleClicked)
+
+        btnRemoveRule = uitree.get_object("btnRemoveRule")
+        btnRemoveRule.connect("clicked", self.OnBtnRemoveRuleClicked)
+
+        self.txtRuleName = uitree.get_object("txtRuleName")
+        self.txtProfileName = uitree.get_object("txtProfileName")
+
+        #icon selector
+        self.treeIconContexts = uitree.get_object("treeIconContexts")
+        self.treeIconContexts.connect("cursor-changed",
+                                      self.OnTreeIconContextsChanged)
+
+        self.treeIcons = uitree.get_object("treeIcons")
+        self.treeIcons.connect("cursor-changed", self.OnTreeIconsChanged)
+
+        self.txtIconName = uitree.get_object("txtIconName")
+        self.txtIconName.connect("changed", self.OnTxtIconNameChanged)
+        self.imgIconPreview = uitree.get_object("imgIconPreview")
+
+        btnIconOk = uitree.get_object("btnIconOk")
+        btnIconOk.connect("clicked", self.OnBtnIconOkClicked)
+
+        btnIconCancel = uitree.get_object("btnIconCancel")
+        btnIconCancel.connect("clicked", self.OnBtnIconCancelClicked)
+
+        #str unique id
+        #bool active
+        #str name
+        self.modelProfiles = Gtk.ListStore(str, bool, str)
+        self.treeProfiles.set_model(self.modelProfiles)
+
+        col = Gtk.TreeViewColumn(_("Use"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererToggle()
+        col.pack_start(cell, True)
+        cell.set_property("activatable", True)
+        cell.set_property("radio", True)
+        cell.connect("toggled", self.OnCellRadioToggled, self.modelProfiles, 1)
+        col.add_attribute(cell, 'active', 1)
+        self.treeProfiles.append_column(col)
+
+        col = Gtk.TreeViewColumn(_("Profile"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererText()
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'text', 2)
+        self.treeProfiles.append_column(col)
+
+        self.LoadProfiles()
+
+        #str unique id
+        #bool Used
+        # str name
+        # str icon-name
+        self.modelRules = Gtk.ListStore(str, bool, str, str)
+        self.treeRules.set_model(self.modelRules)
+
+        col = Gtk.TreeViewColumn(_("Use"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererToggle()
+        col.pack_start(cell, True)
+        cell.set_property("activatable", True)
+        cell.connect("toggled", self.OnCellToggled, self.modelRules, 1)
+        col.add_attribute(cell, 'active', 1)
+        self.treeRules.append_column(col)
+
+        col = Gtk.TreeViewColumn(_("Rule"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererText()
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'text', 2)
+        self.treeRules.append_column(col)
+
+        col = Gtk.TreeViewColumn()
+        col.set_resizable(True)
+        cell = Gtk.CellRendererPixbuf()
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'icon-name', 3)
+        cell.set_property("stock-size", Gtk.IconSize.DND)
+        self.treeRules.append_column(col)
+
+        #str regex
+        #str type
+        self.modelRegex = Gtk.ListStore(str, str)
+        self.treeRegex.set_model(self.modelRegex)
+
+        col = Gtk.TreeViewColumn(_("Regex"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererText()
+        cell.set_property("editable", True)
+        cell.connect("edited", self.OnCellEdited, self.modelRegex, 0)
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'text', 0)
+        self.treeRegex.append_column(col)
+
+        type_model = Gtk.ListStore(str)
+        type_model.append(["include"])
+        type_model.append(["exclude"])
+
+        col = Gtk.TreeViewColumn(_("Type"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererCombo()
+        cell.set_property("model", type_model)
+        cell.set_property("editable", True)
+        cell.set_property("text-column", 0)
+        cell.connect("edited", self.OnCellEdited, self.modelRegex, 1)
+
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'text', 1)
+        self.treeRegex.append_column(col)
+
+        # icon selector
+
+        #str context name
+        self.modelContexts = Gtk.ListStore(str)
+        self.treeIconContexts.set_model(self.modelContexts)
+
+        col = Gtk.TreeViewColumn(_("Context"))
+        col.set_resizable(True)
+        cell = Gtk.CellRendererText()
+        col.pack_start(cell, True)
+        col.add_attribute(cell, 'text', 0)
+
+        self.treeIconContexts.append_column(col)
+
+        self.theme = Gtk.IconTheme.get_default()
+
+        #str icon name
+        self.modelIcons = Gtk.ListStore(str)
+        self.treeIcons.set_model(self.modelIcons)
+
+        col = Gtk.TreeViewColumn()
+        col.set_resizable(False)
+        cell = Gtk.CellRendererPixbuf()
+        col.pack_start(cell, False)
+        col.add_attribute(cell, 'icon-name', 0)
+        cell.set_property("stock-size", Gtk.IconSize.DND)
+        self.treeIcons.append_column(col)
+
+        col = Gtk.TreeViewColumn(_("Icon name"))
+        col.set_resizable(False)
+        cell = Gtk.CellRendererText()
+        col.pack_start(cell, False)
+        col.add_attribute(cell, 'text', 0)
+        col.set_sort_order(Gtk.SortType.ASCENDING)
+        self.treeIcons.append_column(col)
+
+        for c in self.theme.list_contexts():
+            self.modelContexts.append([c])
+
+        self.winProfiles.show_all()
+
+    def OnDestroy(self, data):
+
+        client = n4d.client.Client("https://server:9779")
+        client.MovingProfiles.set_conf(self.db)
+        
+        Gtk.main_quit()
+
+    def OnCellRadioToggled(self, cell, path, model, col):
+
+        sel_iter = model.get_iter(path)
+        value = model.get_value(sel_iter, col)
+
+        if not value:
+            sel_id = model.get_value(sel_iter, 0)
+            self.db["setup"]["selected"] = sel_id
+
+            self.LoadProfiles()
+
+    def OnCellToggled(self, cell, path, model, col):
+        #print "Toggled: ",path
+        iter = model.get_iter(path)
+        value = model.get_value(iter, col)
+        model.set_value(iter, col, not value)
+
+    def OnCellEdited(self, cell, path, text, model, col):
+        #print "Edited: ",path," with data ",text
+
+        iter = model.get_iter(path)
+        model.set_value(iter, col, text)
+
+    def OnBtnEditProfileClicked(self, data):
+
+        #I do not know why in the name of god, treemodel
+        # messes it up all when operating it hidden
+        self.winRules.show_all()
+
+        self.backup = copy.deepcopy(self.db)
+
+        self.LoadProfile()
+
+    def OnBtnAddProfileClicked(self, data):
+        h = hashlib.md5()
+        h.update(str(time.time()))
+        id = h.hexdigest()
+
+        #print "New Profile ",id
+
+        profile = {}
+        profile["id"] = id
+        profile["name"] = _("New profile")
+        profile["rules"] = []
+
+        self.db["setup"]["profiles"].append(profile)
+
+        self.LoadProfiles()
+
+    def OnBtnRemoveProfileClicked(self, data):
+        model, iter = self.treeProfiles.get_selection().get_selected()
+
+        src_id = model.get_value(iter, 0)
+
+        #default profile cannot be removed
+        if src_id == self.default_id:
+            return
+
+        if src_id == self.db["setup"]["selected"]:
+            self.db["setup"]["selected"] = self.default_id
+
+        n = 0
+
+        for p in self.db["setup"]["profiles"]:
+
+            if p["id"] == src_id:
+                break
+
+            n = n + 1
+
+        self.db["setup"]["profiles"].pop(n)
+
+        self.LoadProfiles()
+
+    def OnBtnDuplicateProfileClicked(self, data):
+        model, iter = self.treeProfiles.get_selection().get_selected()
+
+        src_id = model.get_value(iter, 0)
+
+        print "Duplicating id ", src_id
+
+        for p in self.db["setup"]["profiles"]:
+            if p["id"] == src_id:
+                src_profile = p
+                break
+
+        h = hashlib.md5()
+        h.update(str(time.time()))
+        id = h.hexdigest()
+
+        profile = {}
+        profile["id"] = id
+        profile["name"] = _("Copy of ") + src_profile["name"]
+        profile["rules"] = src_profile["rules"]
+
+        self.db["setup"]["profiles"].append(profile)
+
+        self.LoadProfiles()
+
+    def OnBtnEditRuleClicked(self, data):
+        self.winEditor.show_all()
+
+        model, iter = self.treeRules.get_selection().get_selected()
+
+        if not iter == None:
+            self.current_rule_id = model.get_value(iter, 0)
+
+            self.LoadRule()
+
+    def LoadRule(self):
+
+        self.modelRegex.clear()
+
+        for rule in self.db["setup"]["rules"]:
+
+            if rule["id"] == self.current_rule_id:
+                self.txtRuleName.set_text(rule["name"])
+                self.imgIconEditor.set_from_icon_name(rule["icon"],
+                                                      Gtk.IconSize.DND)
+
+                for rg in rule["regex"]:
+                    self.modelRegex.append([rg["pattern"], rg["type"]])
+
+    def OnBtnOkRuleClicked(self, data):
+
+        if self.current_profile_id == self.default_id:
+            #print "Ignoring changes"
+            self.winRules.hide()
+            self.LoadProfiles()
+            return
+
+        print("Saving profile to {0}".format(self.current_profile_id))
+
+        iter = self.modelRules.get_iter_first()
+        ids = []
+        while iter != None:
+            id = self.modelRules.get_value(iter, 0)
+            active = self.modelRules.get_value(iter, 1)
+            name = self.modelRules.get_value(iter, 2)
+            icon = self.modelRules.get_value(iter, 3)
+
+            if active:
+                ids.append(id)
+
+            iter = self.modelRules.iter_next(iter)
+
+        for p in self.db["setup"]["profiles"]:
+            if p["id"] == self.current_profile_id:
+                p["name"] = self.txtProfileName.get_text()
+                #print "Selected ids:"
+                #print ids
+                p["rules"] = ids
+
+        self.winRules.hide()
+        self.LoadProfiles()
+
+    def OnBtnCancelRuleClicked(self, data):
+        self.db = self.backup
+        self.winRules.hide()
+
+    def OnBtnOkEditClicked(self, data):
+        print("Saving rule to {0}".format(self.current_rule_id))
+        for rule in self.db["setup"]["rules"]:
+            if (rule["id"] == self.current_rule_id):
+                rule["name"] = self.txtRuleName.get_text()
+
+                icon_name, icon_size = self.imgIconEditor.get_icon_name()
+                rule["icon"] = icon_name
+                iter = self.modelRegex.get_iter_first()
+                regex = []
+                while iter != None:
+                    p = {}
+                    p["pattern"] = self.modelRegex.get_value(iter, 0)
+                    p["type"] = self.modelRegex.get_value(iter, 1)
+                    regex.append(p)
+
+                    iter = self.modelRegex.iter_next(iter)
+
+                rule["regex"] = regex
+
+        self.winEditor.hide()
+        self.LoadProfile()
+
+    def OnBtnCancelEditClicked(self, data):
+        self.winEditor.hide()
+
+    def OnBtnIconEditorClicked(self, data):
+        self.winIconSelector.show_all()
+
+        for rule in self.db["setup"]["rules"]:
+            if (rule["id"] == self.current_rule_id):
+                self.txtIconName.set_text(rule["icon"])
+
+    def LoadProfiles(self):
+
+        self.modelProfiles.clear()
+        sel_id = self.db["setup"]["selected"]
+
+        for p in self.db["setup"]["profiles"]:
+            use = p["id"] == sel_id
+
+            if (p["id"] == self.default_id):
+                name = p["name"] + " " + _("(read only)")
+            else:
+                name = p["name"]
+
+            self.modelProfiles.append([p["id"], use, name])
+
+    def LoadProfile(self):
+        model, iter = self.treeProfiles.get_selection().get_selected()
+
+        if not iter == None:
+            id = model.get_value(iter, 0)
+
+            print "Selected: ", id
+
+            self.current_profile_id = id
+
+            rmodel = self.treeRules.get_model()
+            rmodel.clear()
+
+            selected = []
+            for p in self.db["setup"]["profiles"]:
+                if p["id"] == id:
+                    self.txtProfileName.set_text(p["name"])
+
+                    for r in p["rules"]:
+                        selected.append(r)
+
+            for rule in self.db["setup"]["rules"]:
+                rmodel.append([
+                    rule["id"], rule["id"] in selected, rule["name"],
+                    rule["icon"]
+                ])
+
+    def OnBtnAddRuleClicked(self, data):
+        h = hashlib.md5()
+        h.update(str(time.time()))
+        id = h.hexdigest()
+
+        print("New rule {0}".format(id))
+
+        rule = {}
+        rule["id"] = id
+        rule["name"] = "New Rule"
+        rule["icon"] = "user-info"
+        rule["regex"] = [{"pattern": "*.*", "type": "include"}]
+        self.db["setup"]["rules"].append(rule)
+
+        self.LoadProfile()
+
+    def OnBtnRemoveRuleClicked(self, data):
+        model, iter = self.treeRules.get_selection().get_selected()
+
+        id = model.get_value(iter, 0)
+
+        n = 0
+        for rule in self.db["setup"]["rules"]:
+            if rule["id"] == id:
+                break
+
+            n = n + 1
+
+        #print "Removing ",id, " at ",n
+        self.db["setup"]["rules"].pop(n)
+
+        self.LoadProfile()
+
+    def OnBtnAddRegexClicked(self, data):
+        self.modelRegex.append(["*", "include"])
+
+    def OnBtnRemoveRegexClicked(self, data):
+        model, iter = self.treeRegex.get_selection().get_selected()
+
+        model.remove(iter)
+
+    # *********** Icon selector **************
+
+    def OnBtnIconOkClicked(self, data):
+
+        self.imgIconEditor.set_from_icon_name(self.txtIconName.get_text(),
+                                              Gtk.IconSize.DND)
+
+        self.winIconSelector.hide()
+
+    def OnBtnIconCancelClicked(self, data):
+
+        self.winIconSelector.hide()
+
+    def OnTreeIconContextsChanged(self, data):
+
+        model, iter = self.treeIconContexts.get_selection().get_selected()
+
+        if iter != None:
+
+            context = model.get_value(iter, 0)
+
+            self.modelIcons.clear()
+
+            for ic in self.theme.list_icons(context):
+                self.modelIcons.append([ic])
+
+    def OnTreeIconsChanged(self, data):
+        model, iter = self.treeIcons.get_selection().get_selected()
+
+        if iter != None:
+            name = self.modelIcons.get_value(iter, 0)
+            self.txtIconName.set_text(name)
+
+    def OnTxtIconNameChanged(self, data):
+        name = self.txtIconName.get_text()
+
+        self.imgIconPreview.set_from_icon_name(name, Gtk.IconSize.DND)
+
+    def LoadSetup(self):
+
+        client = n4d.client.Client("https://server:9779")
+        self.db = client.MovingProfiles.get_conf()
 
 
-		col=Gtk.TreeViewColumn(_("Profile"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererText()
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'text', 2)
-		self.treeProfiles.append_column(col)
-		
-		
-		self.LoadProfiles()
-		
-		
-		#str unique id
-		#bool Used
-		# str name
-		# str icon-name
-		self.modelRules=Gtk.ListStore(str,bool,str,str)
-		self.treeRules.set_model(self.modelRules)
-		
-		
-				
-		
-		col=Gtk.TreeViewColumn(_("Use"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererToggle()
-		col.pack_start(cell, True)
-		cell.set_property("activatable",True)
-		cell.connect("toggled",self.OnCellToggled,self.modelRules,1)
-		col.add_attribute(cell, 'active', 1)
-		self.treeRules.append_column(col)
-		
-		col=Gtk.TreeViewColumn(_("Rule"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererText()
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'text', 2)
-		self.treeRules.append_column(col)
-		
-		col=Gtk.TreeViewColumn()
-		col.set_resizable(True)
-		cell=Gtk.CellRendererPixbuf()
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'icon-name', 3)
-		cell.set_property("stock-size",Gtk.IconSize.DND)
-		self.treeRules.append_column(col)
-		
-		
-		
-		#str regex
-		#str type
-		self.modelRegex=Gtk.ListStore(str,str)
-		self.treeRegex.set_model(self.modelRegex)
-		
-		col=Gtk.TreeViewColumn(_("Regex"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererText()
-		cell.set_property("editable",True)
-		cell.connect("edited",self.OnCellEdited,self.modelRegex,0)
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'text', 0)
-		self.treeRegex.append_column(col)
-		
-		type_model=Gtk.ListStore(str)
-		type_model.append(["include"])
-		type_model.append(["exclude"])
-		
-		col=Gtk.TreeViewColumn(_("Type"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererCombo()
-		cell.set_property("model",type_model)
-		cell.set_property("editable",True)
-		cell.set_property("text-column",0)
-		cell.connect("edited",self.OnCellEdited,self.modelRegex,1)
-		
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'text', 1)
-		self.treeRegex.append_column(col)
-		
-		
-		# icon selector
-		
-		#str context name
-		self.modelContexts=Gtk.ListStore(str)
-		self.treeIconContexts.set_model(self.modelContexts)
-		
-		col=Gtk.TreeViewColumn(_("Context"))
-		col.set_resizable(True)
-		cell = Gtk.CellRendererText()
-		col.pack_start(cell, True)
-		col.add_attribute(cell, 'text', 0)
+if __name__ == "__main__":
 
-		self.treeIconContexts.append_column(col)
-		
-		self.theme = Gtk.IconTheme.get_default()
-		
-		
-		
-			
-			
-		#str icon name
-		self.modelIcons=Gtk.ListStore(str)
-		self.treeIcons.set_model(self.modelIcons)
-		
-		col=Gtk.TreeViewColumn()
-		col.set_resizable(False)
-		cell=Gtk.CellRendererPixbuf()
-		col.pack_start(cell, False)
-		col.add_attribute(cell, 'icon-name', 0)
-		cell.set_property("stock-size",Gtk.IconSize.DND)
-		self.treeIcons.append_column(col)
-		
-		col=Gtk.TreeViewColumn(_("Icon name"))
-		col.set_resizable(False)
-		cell = Gtk.CellRendererText()
-		col.pack_start(cell, False)
-		col.add_attribute(cell, 'text', 0)
-		col.set_sort_order(Gtk.SortType.ASCENDING)
-		self.treeIcons.append_column(col)
-		
-		
-		
-		
-		
-		for c in self.theme.list_contexts():
-			self.modelContexts.append([c])
-		
-		self.winProfiles.show_all()
-		
-
-	def OnDestroy(self,data):
-	
-		proxy=xmlrpclib.ServerProxy("https://server:9779")
-		proxy.set_conf("","MovingProfiles",self.db)
-	
-		Gtk.main_quit()
-
-	def OnCellRadioToggled(self,cell,path,model,col):
-
-		sel_iter=model.get_iter(path)
-		value=model.get_value(sel_iter,col)
-		
-		if not value:
-			sel_id=model.get_value(sel_iter,0)
-			self.db["setup"]["selected"]=sel_id
-			
-			self.LoadProfiles()
-		
-		
-		
-
-	def OnCellToggled(self,cell,path,model,col):
-		#print "Toggled: ",path
-		iter=model.get_iter(path)
-		value=model.get_value(iter,col)
-		model.set_value(iter,col,not value)
-	
-
-	def OnCellEdited(self,cell,path,text,model,col):
-		#print "Edited: ",path," with data ",text
-		
-		iter=model.get_iter(path)
-		model.set_value(iter,col,text)
-		
-		
-	
-	def OnBtnEditProfileClicked(self,data):
-	
-		#I do not know why in the name of god, treemodel
-		# messes it up all when operating it hidden
-		self.winRules.show_all()
-	
-		self.backup=copy.deepcopy(self.db)
-		
-		self.LoadProfile()
-		
-
-	def OnBtnAddProfileClicked(self,data):
-		h=hashlib.md5()
-		h.update(str(time.time()))
-		id=h.hexdigest()
-		
-		#print "New Profile ",id
-		
-		profile={}
-		profile["id"]=id
-		profile["name"]=_("New profile")
-		profile["rules"]=[]
-		
-		self.db["setup"]["profiles"].append(profile)
-		
-		self.LoadProfiles()
-		
-	def OnBtnRemoveProfileClicked(self,data):
-		model,iter=self.treeProfiles.get_selection().get_selected()
-		
-		src_id=model.get_value(iter,0)
-		
-		#default profile cannot be removed
-		if src_id==self.default_id:
-			return
-		
-		if src_id==self.db["setup"]["selected"]:
-			self.db["setup"]["selected"]=self.default_id
-			
-		
-		
-		n=0
-		
-		for p in self.db["setup"]["profiles"]:
-			
-			if p["id"]==src_id:
-				break
-				
-			n=n+1
-			
-		self.db["setup"]["profiles"].pop(n)
-			
-		self.LoadProfiles()
-	
-	def OnBtnDuplicateProfileClicked(self,data):
-		model,iter=self.treeProfiles.get_selection().get_selected()
-		
-		src_id=model.get_value(iter,0)
-		
-		print "Duplicating id ",src_id
-		
-		for p in self.db["setup"]["profiles"]:
-			if p["id"]==src_id:
-				src_profile=p
-				break
-				
-		
-		h=hashlib.md5()
-		h.update(str(time.time()))
-		id=h.hexdigest()
-		
-		profile={}
-		profile["id"]=id
-		profile["name"]=_("Copy of ")+src_profile["name"]
-		profile["rules"]=src_profile["rules"]
-		
-		self.db["setup"]["profiles"].append(profile)
-		
-		self.LoadProfiles()
-	
-		
-	def OnBtnEditRuleClicked(self,data):
-		self.winEditor.show_all()
-		
-		model,iter=self.treeRules.get_selection().get_selected()
-
-		if not iter==None:
-			self.current_rule_id=model.get_value(iter,0)
-			
-			self.LoadRule()
-	
-	def LoadRule(self):
-
-		self.modelRegex.clear()
-		
-		for rule in self.db["setup"]["rules"]:
-		
-			if rule["id"]==self.current_rule_id:
-				self.txtRuleName.set_text(rule["name"])
-				self.imgIconEditor.set_from_icon_name(rule["icon"],Gtk.IconSize.DND)
-				
-				for rg in rule["regex"]:
-					self.modelRegex.append([rg["pattern"],rg["type"]])
-		
-	
-	def OnBtnOkRuleClicked(self,data):
-	
-		if self.current_profile_id==self.default_id:
-			#print "Ignoring changes"
-			self.winRules.hide()
-			self.LoadProfiles()
-			return
-		
-		print ("Saving profile to {0}".format(self.current_profile_id))
-		
-		
-	
-		iter=self.modelRules.get_iter_first()
-		ids=[]
-		while iter!=None:
-			id=self.modelRules.get_value(iter,0)
-			active=self.modelRules.get_value(iter,1)
-			name=self.modelRules.get_value(iter,2)
-			icon=self.modelRules.get_value(iter,3)
-			
-			if active:
-				ids.append(id)
-			
-			iter=self.modelRules.iter_next(iter)
-		
-		
-		for p in self.db["setup"]["profiles"]:
-			if p["id"]==self.current_profile_id:
-				p["name"]=self.txtProfileName.get_text()
-				#print "Selected ids:"
-				#print ids
-				p["rules"]=ids
-				
-		self.winRules.hide()
-		self.LoadProfiles()
-
-	
-	def OnBtnCancelRuleClicked(self,data):
-		self.db=self.backup
-		self.winRules.hide()
-	
-	def OnBtnOkEditClicked(self,data):
-		print ("Saving rule to {0}".format(self.current_rule_id))
-		for rule in self.db["setup"]["rules"]:
-			if(rule["id"]==self.current_rule_id):
-				rule["name"]=self.txtRuleName.get_text()
-				
-				icon_name,icon_size=self.imgIconEditor.get_icon_name()
-				rule["icon"]=icon_name
-				iter=self.modelRegex.get_iter_first()
-				regex=[]
-				while iter!=None:
-					p={}
-					p["pattern"]=self.modelRegex.get_value(iter,0)
-					p["type"]=self.modelRegex.get_value(iter,1)
-					regex.append(p)
-					
-					iter=self.modelRegex.iter_next(iter)
-
-				rule["regex"]=regex
-			
-		self.winEditor.hide()
-		self.LoadProfile()
-		
-		
-	
-	
-	def OnBtnCancelEditClicked(self,data):
-		self.winEditor.hide()
-		
-	
-	
-	
-	def OnBtnIconEditorClicked(self,data):
-		self.winIconSelector.show_all()
-		
-		for rule in self.db["setup"]["rules"]:
-			if(rule["id"]==self.current_rule_id):
-				self.txtIconName.set_text(rule["icon"])
-	
-	def LoadProfiles(self):
-	
-		self.modelProfiles.clear()
-		sel_id=self.db["setup"]["selected"]
-		
-		for p in self.db["setup"]["profiles"]:
-			use=p["id"]==sel_id
-			
-			if (p["id"]==self.default_id):
-				name=p["name"]+" "+_("(read only)")
-			else:
-				name=p["name"]
-			
-			self.modelProfiles.append([p["id"],use,name])
-	
-	def LoadProfile(self):
-		model,iter=self.treeProfiles.get_selection().get_selected()
-
-		if not iter==None:
-			id=model.get_value(iter,0)
-			
-			print "Selected: ",id
-			
-			self.current_profile_id=id
-			
-			rmodel=self.treeRules.get_model()
-			rmodel.clear()
-			
-			
-			selected=[]
-			for p in self.db["setup"]["profiles"]:
-				if p["id"]==id:
-					self.txtProfileName.set_text(p["name"])
-
-				
-					for r in p["rules"]:
-						selected.append(r)
-					
-			for rule in self.db["setup"]["rules"]:
-				rmodel.append([rule["id"],rule["id"] in selected,rule["name"],rule["icon"]])
-				
-				
-
-	def OnBtnAddRuleClicked(self,data):
-		h=hashlib.md5()
-		h.update(str(time.time()))
-		id=h.hexdigest()
-		
-		print ("New rule {0}".format(id))
-		
-		rule={}
-		rule["id"]=id
-		rule["name"]="New Rule"
-		rule["icon"]="user-info"
-		rule["regex"]=[{"pattern":"*.*","type":"include"}]
-		self.db["setup"]["rules"].append(rule)
-		
-		self.LoadProfile()
-		
-		
-	def OnBtnRemoveRuleClicked(self,data):
-		model,iter=self.treeRules.get_selection().get_selected()
-		
-		id=model.get_value(iter,0)
-		
-		
-		n=0
-		for rule in self.db["setup"]["rules"]:
-			if rule["id"]==id:
-				break
-				
-			n=n+1
-		
-		#print "Removing ",id, " at ",n	
-		self.db["setup"]["rules"].pop(n)
-		
-		self.LoadProfile()
-
-	
-	def OnBtnAddRegexClicked(self,data):
-		self.modelRegex.append(["*","include"])
-			
-	def OnBtnRemoveRegexClicked(self,data):
-		model,iter=self.treeRegex.get_selection().get_selected()
-		
-		model.remove(iter)
-		
-		
-	# *********** Icon selector **************
-	
-	def OnBtnIconOkClicked(self,data):
-	
-		self.imgIconEditor.set_from_icon_name(self.txtIconName.get_text(),Gtk.IconSize.DND)
-	
-		self.winIconSelector.hide()
-		
-	
-	
-	def OnBtnIconCancelClicked(self,data):
-	
-		self.winIconSelector.hide()
-	
-	def OnTreeIconContextsChanged(self,data):
-		
-		model,iter=self.treeIconContexts.get_selection().get_selected()
-		
-		if iter!=None:
-		
-			context=model.get_value(iter,0)
-		
-			self.modelIcons.clear()
-		
-			for ic in self.theme.list_icons(context):
-				self.modelIcons.append([ic])
-		
-	
-	def OnTreeIconsChanged(self,data):
-		model,iter=self.treeIcons.get_selection().get_selected()
-		
-		if iter!=None:
-			name=self.modelIcons.get_value(iter,0)
-			self.txtIconName.set_text(name)
-		
-	
-	
-	
-	
-	def OnTxtIconNameChanged(self,data):
-		name=self.txtIconName.get_text()
-		
-		self.imgIconPreview.set_from_icon_name(name,Gtk.IconSize.DND)
-	
-	
-	def LoadSetup(self):
-	
-		proxy=xmlrpclib.ServerProxy("https://server:9779")
-		self.db=proxy.get_conf("","MovingProfiles")
-		
-		
-if __name__=="__main__":
-
-	p=Editor()
-	Gtk.main()
+    p = Editor()
+    Gtk.main()
