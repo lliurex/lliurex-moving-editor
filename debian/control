@@ -2,14 +2,14 @@ Source: lliurex-moving-editor
 Section: x11
 Priority: extra
 Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
-Build-Depends: debhelper (>= 10), python-dev, n4d-dev, zero-dev,llxsrchelper,python3-poinstaller
+Build-Depends: debhelper (>= 10), zero-dev, llxsrchelper, python3-poinstaller, python3, dh-python, python3-minimal, python3-setuptools
 Standards-Version: 4.1.2
 Homepage: http://www.lliurex.net
 
 
 Package: lliurex-moving-editor
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, n4d-moving-profiles
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-n4d-client
 Recommends: zero-center
 Description: Lliurex Moving Editor
  Lliurex moving graphical interface settings manager
