@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import n4d.client
 
@@ -31,7 +31,7 @@ class Editor:
                 raise ("Resource file not found: " + glade_file)
 
         h = hashlib.md5()
-        h.update("default profile")
+        h.update(b"default profile")
         self.default_id = h.hexdigest()
 
         #print "default id:",self.default_id
@@ -290,7 +290,7 @@ class Editor:
 
     def OnBtnAddProfileClicked(self, data):
         h = hashlib.md5()
-        h.update(str(time.time()))
+        h.update(str(time.time()).encode())
         id = h.hexdigest()
 
         #print "New Profile ",id
@@ -334,7 +334,7 @@ class Editor:
 
         src_id = model.get_value(iter, 0)
 
-        print "Duplicating id ", src_id
+        print ("Duplicating id ", src_id)
 
         for p in self.db["setup"]["profiles"]:
             if p["id"] == src_id:
@@ -342,7 +342,7 @@ class Editor:
                 break
 
         h = hashlib.md5()
-        h.update(str(time.time()))
+        h.update(str(time.time()).encode())
         id = h.hexdigest()
 
         profile = {}
@@ -469,7 +469,7 @@ class Editor:
         if not iter == None:
             id = model.get_value(iter, 0)
 
-            print "Selected: ", id
+            print ("Selected: ", id)
 
             self.current_profile_id = id
 
@@ -492,7 +492,7 @@ class Editor:
 
     def OnBtnAddRuleClicked(self, data):
         h = hashlib.md5()
-        h.update(str(time.time()))
+        h.update(str(time.time()).encode())
         id = h.hexdigest()
 
         print("New rule {0}".format(id))
